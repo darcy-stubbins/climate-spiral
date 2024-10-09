@@ -1,9 +1,12 @@
 let data;
 let months;
 
-//zero radius is 75px from the center & one radius is 200px from the center 
-let zeroRadius = 75;
-let oneRadius = 175;
+//zero radius is 100px from the center & one radius is 175px from the center 
+let zeroRadius = 125;
+let oneRadius = 200;
+
+let currentRow = 0;
+let currentMonth = 0;
 
 //put the global temps data into a table 
 function preload() {
@@ -41,6 +44,7 @@ function setup() {
 function draw() {
   background(0);
   translate(width / 2, height / 2);
+  textAlign(CENTER, CENTER);
 
   //draw 0° circle 
   stroke(255);
@@ -83,24 +87,32 @@ function draw() {
     pop();
   }
 
+  //putting the year in the middle 
+  let year = data.getRow(currentRow).get("Year");
+  textSize(24);
+  text(year, 0, 0);
+
   //drawing between the points of the degrees of each month 
   beginShape();
   noFill();
   stroke(255);
   console.log(year);
 
-  //looping through every row of the data 
-  for (let j = 0; j < data.getRowCount(); j++) {
+  //looping through each row of data 
+  for (let j = 0; j < currentRow; j++) {
     let row = data.getRow(j);
-    // let year = row.get("Year");
-    // textAlign(CENTER, CENTER);
-    // textSize(24);
-    // text(year, 0, 0);
-    for (let i = 0; i < months.length; i++) {
+
+    let totalMonths = months.length;
+    if (j == currentRow - 1) {
+      totalMonths = currentMonth;
+    }
+
+    //looping through each month of the row 
+    for (let i = 0; i < totalMonths; i++) {
       let anomaly = row.get(months[i]);
       //if the data is *** for an unfished year then ignore it
       if (anomaly !== '***') {
-        let angle = map(i, 0, months.length, 0, TWO_PI) + PI / 2;
+        let angle = map(i, 0, months.length, 0, TWO_PI) - PI / 3;
         //0 degree is mapped to 75px and 1 degree is mapped to 150px
         let r = map(anomaly, 0, 1, zeroRadius, oneRadius);
 
@@ -111,5 +123,15 @@ function draw() {
     }
   }
   endShape();
-  noLoop();
+
+  currentMonth = currentMonth + 1;
+  if (currentMonth == months.length) {
+    currentMonth = 0;
+    currentRow = currentRow + 1;
+    if (currentRow == data.getRowCount()) {
+      noLoop();
+    }
+  }
+
+  // frameRate(5);
 }
