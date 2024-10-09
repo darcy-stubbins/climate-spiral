@@ -5,8 +5,10 @@ let months;
 let zeroRadius = 125;
 let oneRadius = 200;
 
-let currentRow = 0;
+let currentRow = 1;
 let currentMonth = 0;
+
+let previousAnomaly = 0;
 
 //put the global temps data into a table 
 function preload() {
@@ -93,11 +95,10 @@ function draw() {
   text(year, 0, 0);
 
   //drawing between the points of the degrees of each month 
-  beginShape();
   noFill();
   stroke(255);
-  console.log(year);
 
+  let firstValue = true;
   //looping through each row of data 
   for (let j = 0; j < currentRow; j++) {
     let row = data.getRow(j);
@@ -112,17 +113,39 @@ function draw() {
       let anomaly = row.get(months[i]);
       //if the data is *** for an unfished year then ignore it
       if (anomaly !== '***') {
+        anomaly = parseFloat(anomaly);
         let angle = map(i, 0, months.length, 0, TWO_PI) - PI / 3;
-        //0 degree is mapped to 75px and 1 degree is mapped to 150px
+        let pr = map(previousAnomaly, 0, 1, zeroRadius, oneRadius);
         let r = map(anomaly, 0, 1, zeroRadius, oneRadius);
 
-        let x = r * cos(angle);
-        let y = r * sin(angle);
-        vertex(x, y);
+        let x1 = r * cos(angle);
+        let y1 = r * sin(angle);
+
+        let x2 = pr * cos(angle - PI / 6);
+        let y2 = pr * sin(angle - PI / 6);
+
+        if (!firstValue) {
+          let avg = (anomaly + previousAnomaly) * 0.5;
+
+          let cold = color(0, 0, 255); //blue 
+          let warm = color(255, 0, 0); //red 
+          let zero = color(255); //white 
+          let lineColor = zero;
+
+          if (avg < 0) {
+            lineColor = lerpColor(zero, cold, abs(avg));
+          } else {
+            lineColor = lerpColor(zero, warm, abs(avg));
+          }
+          stroke(lineColor);
+          line(x1, y1, x2, y2);
+        }
+        firstValue = false;
+
+        previousAnomaly = anomaly;
       }
     }
   }
-  endShape();
 
   currentMonth = currentMonth + 1;
   if (currentMonth == months.length) {
@@ -132,6 +155,5 @@ function draw() {
       noLoop();
     }
   }
-
-  // frameRate(5);
+  frameRate(5);
 }
