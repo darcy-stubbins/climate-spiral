@@ -1,7 +1,7 @@
 let data;
 let months;
 
-//zero radius is 100px from the center & one radius is 175px from the center 
+//zero radius is 125px from the center & one radius is 200px from the center 
 let zeroRadius = 125;
 let oneRadius = 200;
 
@@ -53,20 +53,20 @@ function draw() {
   strokeWeight(2);
   noFill();
   circle(0, 0, zeroRadius * 2);
-  fill(255);
+  fill(0, 255, 0);
   noStroke();
   textSize(24);
-  text("0°", zeroRadius + 5, 0);
+  text("0°", zeroRadius + 20, 0);
 
   //draw 1° circle 
   stroke(255);
   strokeWeight(2);
   noFill();
   circle(0, 0, oneRadius * 2);
-  fill(255);
+  fill(0, 255, 0);
   noStroke();
   textSize(24);
-  text("1°", oneRadius + 5, 0);
+  text("1°", oneRadius + 20, 0);
 
   //showing the month labels 
   stroke(255);
@@ -155,5 +155,5 @@ function draw() {
       noLoop();
     }
   }
-  frameRate(5);
+  frameRate(50);
 }
