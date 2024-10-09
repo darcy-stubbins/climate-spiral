@@ -1,9 +1,9 @@
 let data;
 let months;
 
-//zero radius is 75px from the center & one radius is 150px from the center 
+//zero radius is 75px from the center & one radius is 200px from the center 
 let zeroRadius = 75;
-let oneRadius = 150;
+let oneRadius = 175;
 
 //put the global temps data into a table 
 function preload() {
@@ -83,22 +83,33 @@ function draw() {
     pop();
   }
 
-  let row = data.getRow(140);
-  let year = row.get("Year");
-  textAlign(CENTER, CENTER);
-  textSize(24);
-  text(year, 0, 0);
+  //drawing between the points of the degrees of each month 
+  beginShape();
+  noFill();
+  stroke(255);
   console.log(year);
 
-  for (let i = 0; i < months.length; i++) {
-    let anomaly = row.getNum(months[i]);
-    let angle = map(i, 0, months.length, 0, TWO_PI) + PI / 2;
-    //0 degree is mapped to 75px and 1 degree is mapped to 150px
-    let r = map(anomaly, 0, 1, 75, 150);
+  //looping through every row of the data 
+  for (let j = 0; j < data.getRowCount(); j++) {
+    let row = data.getRow(j);
+    // let year = row.get("Year");
+    // textAlign(CENTER, CENTER);
+    // textSize(24);
+    // text(year, 0, 0);
+    for (let i = 0; i < months.length; i++) {
+      let anomaly = row.get(months[i]);
+      //if the data is *** for an unfished year then ignore it
+      if (anomaly !== '***') {
+        let angle = map(i, 0, months.length, 0, TWO_PI) + PI / 2;
+        //0 degree is mapped to 75px and 1 degree is mapped to 150px
+        let r = map(anomaly, 0, 1, zeroRadius, oneRadius);
 
-    let x = r * cos(angle);
-    let y = r * sin(angle);
-    circle(x, y, 8);
+        let x = r * cos(angle);
+        let y = r * sin(angle);
+        vertex(x, y);
+      }
+    }
   }
+  endShape();
   noLoop();
 }
